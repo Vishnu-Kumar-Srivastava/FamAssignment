@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
 	"net/http"
 	"ytvideofetcher/daos"
 	"ytvideofetcher/models"
@@ -22,8 +23,9 @@ func NewYoutubeService() IYoutubeService {
 func (s *YoutubeService) GetVideos(ctx context.Context) {
 	apiKey := "AIzaSyDwUN9D85UP-Y0cNurozBoONoCP2Vj2eHg"
 	query := "football"
+	sevenDaysAgo := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05Z")
 
-	url := fmt.Sprintf("https://www.googleapis.com/youtube/v3/search?key=%s&q=%s&type=video&part=snippet", apiKey, query)
+	url := fmt.Sprintf("https://www.googleapis.com/youtube/v3/search?key=%s&q=%s&type=video&part=snippet&order=date&publishedAfter=%s", apiKey, query,sevenDaysAgo)
 
 	// Create a new GET request
 	req, err := http.NewRequest("GET", url, nil)
@@ -57,9 +59,8 @@ func (s *YoutubeService) GetVideos(ctx context.Context) {
 	}
 	dao := daos.NewYtVideoDAO()
 	dao.UpsertVideos(ctx, videos)
-	
 
-	x,err := dao.GetVideos(ctx)
+	x, err := dao.GetVideos(ctx)
 	fmt.Println(x)
 
 	// Print the response body (or do something else with it)
