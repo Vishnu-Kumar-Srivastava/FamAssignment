@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	
 	"net/http"
 	"strconv"
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 // FetchLatestVideos fetches latest videos from YouTube and stores in MongoDB
 func Sync(c *gin.Context) {
 	var ctx = c.Request.Context()
-	fmt.Println("hello world")
+
 	youtubeservice := services.NewYoutubeService()
 	err := youtubeservice.PullAndSaveVideos(ctx)
 	if err != nil {

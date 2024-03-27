@@ -10,6 +10,8 @@ import (
 	"time"
 	"ytvideofetcher/daos"
 	"ytvideofetcher/models"
+	"os"
+	"github.com/joho/godotenv"
 )
 
 type YoutubeService struct {
@@ -22,7 +24,13 @@ func NewYoutubeService() IYoutubeService {
 }
 
 func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
-	apiKey := ""
+	err := godotenv.Load()
+    if err != nil {
+        fmt.Println("Error loading .env file")
+        return err
+    }
+	apiKey := os.Getenv("APIKEY1")
+	fmt.Println("Api keuy is: ",apiKey)
 	query := "football"
 	sevenDaysAgo := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05Z")
 
