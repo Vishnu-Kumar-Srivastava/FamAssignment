@@ -22,7 +22,7 @@ func NewYoutubeService() IYoutubeService {
 }
 
 func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
-	apiKey := "AIzaSyDwUN9D85UP-Y0cNurozBoONoCP2Vj2eHg"
+	apiKey := ""
 	query := "football"
 	sevenDaysAgo := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05Z")
 
@@ -51,6 +51,11 @@ func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
 		fmt.Println("Error reading response body:", err)
 		return err
 	}
+	if resp.StatusCode != 200 {
+		fmt.Println("Error found! status code: ", resp.StatusCode)
+
+	}
+	// fmt.Println(string(body))
 
 	videos := &models.Response{}
 
@@ -61,9 +66,13 @@ func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
 	}
 	dao := daos.NewYtVideoDAO()
 	dao.UpsertVideos(ctx, videos)
-	
+	count := 0
 	for {
-		
+		if count >= 10 {
+			break
+		}
+		// fmt.Println("count: ", count)
+		count++
 		pageToken := videos.NextPageToken
 		if pageToken == "" {
 			break
@@ -106,8 +115,6 @@ func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
 	// Print the response body (or do something else with it)
 	// fmt.Println(videos)
 }
-
-
 
 func (s *YoutubeService) GetVideos(ctx context.Context, page, limit int) ([]*models.Video, error) {
 	dao := daos.NewYtVideoDAO()
