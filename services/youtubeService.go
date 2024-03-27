@@ -28,6 +28,7 @@ func (s *YoutubeService) GetVideos(ctx context.Context) {
 	url := fmt.Sprintf("https://www.googleapis.com/youtube/v3/search?key=%s&q=%s&type=video&part=snippet&order=date&publishedAfter=%s", apiKey, query,sevenDaysAgo)
 
 	// Create a new GET request
+	
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -58,7 +59,51 @@ func (s *YoutubeService) GetVideos(ctx context.Context) {
 		fmt.Println("Error found!")
 	}
 	dao := daos.NewYtVideoDAO()
-	dao.UpsertVideos(ctx, videos)
+	dao.UpsertVideos(ctx, videos);
+	count:= 0
+	for{
+		if(count>=6){
+			break
+		}
+		count ++
+		pageToken:=videos.NextPageToken
+		if(pageToken==""){
+			break
+		}
+		url = fmt.Sprintf("https://www.googleapis.com/youtube/v3/search?key=%s&q=%s&type=video&part=snippet&order=date&publishedAfter=%s&pageToken=%s", apiKey, query,sevenDaysAgo,pageToken)
+		req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	// Send the request
+	client = &http.Client{}
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
+		return
+	}
+
+	
+
+	err = json.Unmarshal([]byte(string(body)), &videos)
+	if err != nil {
+
+		fmt.Println("Error found!")
+	}
+	dao := daos.NewYtVideoDAO()
+	dao.UpsertVideos(ctx, videos);
+
+	}
 
 	x, err := dao.GetVideos(ctx)
 	fmt.Println(x)
