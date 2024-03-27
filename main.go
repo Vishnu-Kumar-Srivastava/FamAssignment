@@ -18,7 +18,10 @@ func main() {
 	router.Use(gin.Recovery())
 
 	//define routes here
-	router.GET(helpers.Videos,api.Sync)
+	router.GET(helpers.Videos,api.GetVideos)
+	router.GET(helpers.Sync,api.Sync)
+
+
 	server := &http.Server{
 		Addr:         ":" + port,
 		Handler:      router,

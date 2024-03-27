@@ -1,8 +1,11 @@
 package services
-import(
+
+import (
 	"context"
+	"ytvideofetcher/models"
 )
 
 type IYoutubeService interface {
-	GetVideos(ctx context.Context)
+	PullAndSaveVideos(ctx context.Context)  error
+	GetVideos(ctx context.Context) ([]*models.Video, error)
 }
