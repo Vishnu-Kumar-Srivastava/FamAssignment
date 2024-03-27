@@ -2,9 +2,10 @@ package daos
 
 import (
 	"context"
-	
+	"ytvideofetcher/models"
 )
 
-type IYoutubeDAO interface {
-	GetVideos(ctx context.Context) (int, error)
+type IYtVideoDAO interface {
+	UpsertVideos(context.Context, *models.Response) error
+	GetVideos(context.Context) ([]*models.Video,error)
 }

@@ -2,9 +2,12 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"ytvideofetcher/daos"
+	"ytvideofetcher/models"
 )
 
 type YoutubeService struct {
@@ -45,6 +48,20 @@ func (s *YoutubeService) GetVideos(ctx context.Context) {
 		return
 	}
 
+	videos := &models.Response{}
+
+	err = json.Unmarshal([]byte(string(body)), &videos)
+	if err != nil {
+
+		fmt.Println("Error found!")
+	}
+	dao := daos.NewYtVideoDAO()
+	dao.UpsertVideos(ctx, videos)
+	
+
+	x,err := dao.GetVideos(ctx)
+	fmt.Println(x)
+
 	// Print the response body (or do something else with it)
-	fmt.Println(string(body))
+	// fmt.Println(videos)
 }
