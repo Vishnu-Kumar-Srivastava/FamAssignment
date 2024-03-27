@@ -7,5 +7,5 @@ import (
 
 type IYtVideoDAO interface {
 	UpsertVideos(context.Context, *models.Response) error
-	GetVideos(context.Context) ([]*models.Video,error)
+	GetVideos(ctx context.Context) ([]*models.Video, error)
 }

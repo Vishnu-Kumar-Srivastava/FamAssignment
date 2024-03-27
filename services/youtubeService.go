@@ -61,12 +61,9 @@ func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
 	}
 	dao := daos.NewYtVideoDAO()
 	dao.UpsertVideos(ctx, videos)
-	count := 0
+	
 	for {
-		if count >= 6 {
-			break
-		}
-		count++
+		
 		pageToken := videos.NextPageToken
 		if pageToken == "" {
 			break
@@ -110,7 +107,9 @@ func (s *YoutubeService) PullAndSaveVideos(ctx context.Context) error {
 	// fmt.Println(videos)
 }
 
-func (s *YoutubeService) GetVideos(ctx context.Context) ([]*models.Video, error) {
+
+
+func (s *YoutubeService) GetVideos(ctx context.Context, page, limit int) ([]*models.Video, error) {
 	dao := daos.NewYtVideoDAO()
 	videos, err := dao.GetVideos(ctx)
 	if err != nil {
@@ -122,6 +121,19 @@ func (s *YoutubeService) GetVideos(ctx context.Context) ([]*models.Video, error)
 		return videos[i].Snippet.PublishedAt.After(videos[j].Snippet.PublishedAt)
 	})
 
-	return videos, nil
+	// Apply pagination
+	startIndex := (page - 1) * limit
+	endIndex := startIndex + limit
 
+	if startIndex >= len(videos) {
+		return []*models.Video{}, nil // Return empty slice if startIndex is out of range
+	}
+
+	if endIndex > len(videos) {
+		endIndex = len(videos)
+	}
+
+	paginatedVideos := videos[startIndex:endIndex]
+
+	return paginatedVideos, nil
 }

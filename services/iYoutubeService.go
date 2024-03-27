@@ -7,5 +7,5 @@ import (
 
 type IYoutubeService interface {
 	PullAndSaveVideos(ctx context.Context)  error
-	GetVideos(ctx context.Context) ([]*models.Video, error)
+	GetVideos(ctx context.Context, page, limit int) ([]*models.Video, error)
 }
